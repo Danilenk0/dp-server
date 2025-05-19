@@ -38,7 +38,7 @@ const workedtimeValidator = [
       throw new Error("Время работы не может быть больше 8 часов");
     }
     return true;
-  }),
+  }).notEmpty().withMessage('Время работы не может быть пустым')
 ]
 
 const noshowValidator = [
