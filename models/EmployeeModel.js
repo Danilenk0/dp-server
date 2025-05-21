@@ -13,13 +13,27 @@ const employeeSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  address: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: string,
+    required: true,
+    unique: true,
+  },
+  phone: {
+    type: string,
+    require: true,
+    unique: true,
+  },
   position_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Position",
   },
   department_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref:"Department"
+    ref: "Department",
   },
 });
 
