@@ -1,4 +1,5 @@
 import { body } from "express-validator";
+import EmployeeModel from "../models/EmployeeModel.js";
 
 const employeeValidator = [
   body("firstName")
@@ -29,20 +30,35 @@ const employeeValidator = [
     .withMessage("Адрес не может быть числом")
     .notEmpty()
     .withMessage("Адрес не может быть пустым")
-    .isLength({ min: 5, max: 30 }).withMessage("Адрес не может быть короче 5 и длиннее 20 символов"),
-  body('email')
+    .isLength({ min: 5, max: 30 })
+    .withMessage("Адрес не может быть короче 5 и длиннее 20 символов"),
+  body("email")
     .isEmail()
     .withMessage("Введите корректную электронную почту")
     .notEmpty()
-    .withMessage('Электронная почта не может быть пустой'),
-  body('phone').notEmpty().withMessage('Номер телефона не может быть пустым'),
-   body("position_id")
-     .notEmpty()
-     .withMessage("Поле должность не может быть пустым"),
-   body("department_id")
-     .notEmpty()
-     .withMessage("Поле отдел не может быть пустым"),
- ];
+    .withMessage("Электронная почта не может быть пустой")
+    .custom(async (value) => {
+      const employee = await EmployeeModel.findOne({ email: value });
+      if (employee) {
+        throw new Error("Этот email уже существует");
+      }
+    }),
+  body("phone")
+    .notEmpty()
+    .withMessage("Номер телефона не может быть пустым")
+    .custom(async (value) => {
+      const employee = await EmployeeModel.findOne({ phone: value });
+      if (employee) {
+        throw new Error("Этот номер телефона уже существует");
+      }
+    }),
+  body("position_id")
+    .notEmpty()
+    .withMessage("Поле должность не может быть пустым"),
+  body("department_id")
+    .notEmpty()
+    .withMessage("Поле отдел не может быть пустым"),
+];
 
 const workedtimeValidator = [
   body("time").isNumeric().withMessage("Время работы не может быть строкой").custom((value) => {

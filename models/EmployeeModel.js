@@ -18,14 +18,12 @@ const employeeSchema = new mongoose.Schema({
     required: true,
   },
   email: {
-    type: string,
+    type: String,
     required: true,
-    unique: true,
   },
   phone: {
-    type: string,
-    require: true,
-    unique: true,
+    type: String,
+    required: true,
   },
   position_id: {
     type: mongoose.Schema.Types.ObjectId,
