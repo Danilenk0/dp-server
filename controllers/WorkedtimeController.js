@@ -13,6 +13,19 @@ export default class WorkedtimeController {
       res.status(500).json({ message: error.message });
     }
   }
+  static async show(req, res) {
+    try {
+      let id = req.params.id
+      const workedtime = await WorkedtimeModel.findById(id).populate({
+        path: "employee_id",
+        populate: [{ path: "position_id" }, { path: "department_id" }],
+      });
+      return res.status(200).json(workedtime)
+      
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
   static async create(req, res) {
     try {
       const validationErrors = validationResult(req);
@@ -107,7 +120,7 @@ export default class WorkedtimeController {
     try {
       const id = req.params.id;
 
-      const deletedWorkedtime = WorkedtimeModel.findByIdAndDelete(id);
+      const deletedWorkedtime = await WorkedtimeModel.findByIdAndDelete(id);
       if (!deletedWorkedtime) {
         return res
           .status(404)
