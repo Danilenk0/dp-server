@@ -93,6 +93,10 @@ export default class WorkedtimeController {
   }
   static async update(req, res) {
     try {
+      const validationErrors = validationResult(req);
+      if (!validationErrors.isEmpty()) {
+        return res.status(400).json({ errors: validationErrors.array() });
+      }
       let id = req.params.id;
       const updatedWorkedtime = await WorkedtimeModel.findByIdAndUpdate(
         id,

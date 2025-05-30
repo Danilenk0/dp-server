@@ -1,11 +1,7 @@
 import mongoose from 'mongoose'
 
 const noshowSchema = new mongoose.Schema({
-  dateStart: {
-    type: Date,
-    required: true,
-  },
-  dateEnd: {
+  date: {
     type: Date,
     required: true,
   },
