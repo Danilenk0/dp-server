@@ -70,11 +70,7 @@ const workedtimeValidator = [
 ]
 
 const noshowValidator = [
-  body("dateStart")
-    .isDate()
-    .withMessage("Дата начала неявки должна быть датой"),
-  body("dateEnd").isDate().withMessage("Дата конца неявки должна быть датой"),
-  body("type").isString().withMessage("Типо неявки должен быть строкой"),
+  body("type").isString().withMessage("Тип неявки должен быть строкой"),
 ];
 
 
