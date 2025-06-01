@@ -58,7 +58,7 @@ export default class NoshowController {
     try {
       const id = req.params.id;
 
-      const deletedNoshow = NoshowModel.findByIdAndDelete(id);
+      const deletedNoshow = await NoshowModel.findByIdAndDelete(id);
       if (!deletedNoshow) {
         return res
           .status(404)
