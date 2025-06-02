@@ -1,4 +1,5 @@
 import WorkedtimeModel from "../models/WorkedtimeModel.js";
+import NoshowModel from '../models/NoshowModal.js'
 import { validationResult } from "express-validator";
 
 export default class WorkedtimeController {
@@ -15,13 +16,12 @@ export default class WorkedtimeController {
   }
   static async show(req, res) {
     try {
-      let id = req.params.id
+      let id = req.params.id;
       const workedtime = await WorkedtimeModel.findById(id).populate({
         path: "employee_id",
         populate: [{ path: "position_id" }, { path: "department_id" }],
       });
-      return res.status(200).json(workedtime)
-      
+      return res.status(200).json(workedtime);
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
@@ -32,6 +32,7 @@ export default class WorkedtimeController {
       if (!validationErrors.isEmpty()) {
         return res.status(400).json({ errors: validationErrors.array() });
       }
+      const message = ''
 
       const {
         time,
@@ -58,10 +59,9 @@ export default class WorkedtimeController {
         dates.push(d.toISOString().split("T")[0]);
       }
 
-     
       const existingRecords = await WorkedtimeModel.find({
         employee_id: { $in: selectedEmployees },
-        date: { $in: dates.map((date) => new Date(date)) }, 
+        date: { $in: dates.map((date) => new Date(date)) },
       });
 
       const existingSet = new Set(
@@ -69,12 +69,25 @@ export default class WorkedtimeController {
           (record) =>
             `${record.employee_id}_${record.date.toISOString().split("T")[0]}`
         )
-      )
+      );
+
+      const noshow = await NoshowModel.find({
+        employee_id: { $in: selectedEmployees },
+        date: { $in: dates.map((date) => new Date(date)) },
+      });
+
+      const noshowSet = new Set(
+        noshow.map(
+          (absence) =>
+            `${absence.employee_id}_${absence.date.toISOString().split("T")[0]}`
+        )
+      );
+
       const newRecords = [];
       selectedEmployees.forEach((employeeId) => {
         dates.forEach((date) => {
           const key = `${employeeId}_${date}`;
-          if (!existingSet.has(key)) {
+          if (!existingSet.has(key) && !noshowSet.has(key)) {
             newRecords.push({
               employee_id: employeeId,
               date: new Date(date),
@@ -83,10 +96,17 @@ export default class WorkedtimeController {
           }
         });
       });
+
       const workedtimes = await WorkedtimeModel.insertMany(newRecords);
+
+     
+
       res
         .status(200)
-        .json({ message: "Рабочее время успешно добавлено", workedtimes });
+        .json({
+          message: `Рабочее время успешно добавлено.`,
+          workedtimes,
+        });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
