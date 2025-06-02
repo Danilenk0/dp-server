@@ -35,10 +35,6 @@ export default class NoshowController {
       const updatedNoshow = await NoshowModel.findByIdAndUpdate(
         id,
         req.body,
-        {
-          new: true,
-          runValidators: true,
-        }
       );
       if (!updatedNoshow) {
         return res.status(404).json({
