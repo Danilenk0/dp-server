@@ -32,7 +32,6 @@ export default class WorkedtimeController {
       if (!validationErrors.isEmpty()) {
         return res.status(400).json({ errors: validationErrors.array() });
       }
-      const message = ''
 
       const {
         time,
@@ -86,11 +85,19 @@ export default class WorkedtimeController {
       const newRecords = [];
       selectedEmployees.forEach((employeeId) => {
         dates.forEach((date) => {
+          const currentDate = new Date(date);
+          const dayOfWeek = currentDate.getUTCDay(); 
+
           const key = `${employeeId}_${date}`;
-          if (!existingSet.has(key) && !noshowSet.has(key)) {
+          if (
+            !existingSet.has(key) &&
+            !noshowSet.has(key) &&
+            dayOfWeek !== 0 && 
+            dayOfWeek !== 6 
+          ) {
             newRecords.push({
               employee_id: employeeId,
-              date: new Date(date),
+              date: currentDate,
               time: Number(time),
             });
           }
@@ -99,14 +106,10 @@ export default class WorkedtimeController {
 
       const workedtimes = await WorkedtimeModel.insertMany(newRecords);
 
-     
-
-      res
-        .status(200)
-        .json({
-          message: `Рабочее время успешно добавлено.`,
-          workedtimes,
-        });
+      res.status(200).json({
+        message: `Рабочее время успешно добавлено.`,
+        workedtimes,
+      });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
