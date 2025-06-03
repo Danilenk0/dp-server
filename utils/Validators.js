@@ -8,7 +8,9 @@ const employeeValidator = [
     .notEmpty()
     .withMessage("Имя не может быть пустым")
     .isLength({ min: 2, max: 20 })
-    .withMessage("Имя должно быть от 2 до 20 символов"),
+    .withMessage("Имя должно быть от 2 до 20 символов")
+    .matches(/^[A-Za-zА-Яа-яЁё\s]+$/) 
+    .withMessage("Имя не может содержать цифры"),
 
   body("lastName")
     .isString()
@@ -16,7 +18,9 @@ const employeeValidator = [
     .notEmpty()
     .withMessage("Фамилия не может быть пустой")
     .isLength({ min: 2, max: 20 })
-    .withMessage("Фамилия должна быть от 2 до 20 символов"),
+    .withMessage("Фамилия должна быть от 2 до 20 символов")
+    .matches(/^[A-Za-zА-Яа-яЁё\s]+$/)
+    .withMessage("Фамилия не может содержать цифры"),
 
   body("surname")
     .isString()
@@ -24,7 +28,9 @@ const employeeValidator = [
     .notEmpty()
     .withMessage("Отчество не может быть пустым")
     .isLength({ min: 2, max: 20 })
-    .withMessage("Отчество должно быть от 2 до 20 символов"),
+    .withMessage("Отчество должно быть от 2 до 20 символов")
+    .matches(/^[A-Za-zА-Яа-яЁё\s]+$/)
+    .withMessage("Отчество не может содержать цифры"),
   body("address")
     .isString()
     .withMessage("Адрес не может быть числом")
@@ -62,15 +68,15 @@ const employeeValidator = [
 
 const workedtimeValidator = [
   body("time").isNumeric().withMessage("Время работы не может быть строкой").custom((value) => {
-    if (parseFloat(value) > 8) {
-      throw new Error("Время работы не может быть больше 8 часов");
+    if (parseFloat(value) > 8 || parseFloat(value) < 1) {
+      throw new Error("Время работы не может быть больше 8 и меньше одного ");
     }
     return true;
   }).notEmpty().withMessage('Время работы не может быть пустым')
 ]
 
 const noshowValidator = [
-  body("type").isString().withMessage("Тип неявки должен быть строкой"),
+  body("type").isString().withMessage("Тип неявки должен быть строкой").notEmpty().withMessage('Тип неявки не может быть пустым'),
 ];
 
 
